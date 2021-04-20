@@ -31,3 +31,45 @@ export const setActiveSheet = sheetName => {
     .activate();
   return getSheetsData();
 };
+
+/**
+ * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet
+ */
+const getSheetType = sheet => {
+  const name = sheet.getSheetName();
+
+  if (name.startsWith('Translations ')) {
+    return 'translation';
+  }
+
+  if (name.startsWith('Vocabulary ')) {
+    return 'vocabulary';
+  }
+
+  if (name.startsWith('Flavorization ')) {
+    return 'flavorization';
+  }
+
+  return null;
+};
+
+export const getCurrentRow = () => {
+  const currentSheet = SpreadsheetApp.getActive().getActiveSheet();
+  const currentRowIndex = currentSheet.getCurrentCell()?.getRowIndex() ?? 0;
+  const currentRow =
+    currentRowIndex > 0
+      ? currentSheet.getSheetValues(
+          currentRowIndex,
+          1,
+          1,
+          currentSheet.getLastColumn()
+        )
+      : null;
+
+  return {
+    sheet: currentSheet.getSheetName(),
+    rowIndex: currentSheet.getCurrentCell()?.getRowIndex(),
+    range: currentSheet.getActiveRange()?.getA1Notation() || '',
+    values: currentRow,
+  };
+};

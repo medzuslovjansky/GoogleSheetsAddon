@@ -6,20 +6,13 @@ import {
   FormControl,
   IconButton,
   Input,
-  InputAdornment, InputLabel,
-  ListItemSecondaryAction,
+  InputLabel,
   makeStyles,
   TextField,
-  Typography
-} from "@material-ui/core";
+  Typography,
+} from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import {
-  AddCircle,
-  ExpandMore,
-  LocationSearchingOutlined,
-  Mood,
-  MoodBad,
-} from '@material-ui/icons';
+import { AddCircle, ExpandMore, Mood, MoodBad } from '@material-ui/icons';
 import React from 'react';
 
 const useStyles = makeStyles(theme => ({
