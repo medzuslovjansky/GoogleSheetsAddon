@@ -1,25 +1,30 @@
 import React from 'react';
 import { Box, makeStyles } from '@material-ui/core';
-import RowNavigation from './RowNavigation';
-import SourceSection from './SourceSection';
-import IntelligibilitySection from './IntelligibilitySection';
-import PreferencesFAB from './PreferencesFAB';
-import OtherLanguagesSection from './OtherLanguagesSection';
-import TranslationsSection from './TranslationsSection';
+import { useSelectedRecord } from '../hooks/useSelectedRecord';
+
+// import RowNavigation from './RowNavigation';
+// import SourceSection from './SourceSection';
+// import IntelligibilitySection from './IntelligibilitySection';
+// import PreferencesFAB from './PreferencesFAB';
+// import OtherLanguagesSection from './OtherLanguagesSection';
+// import TranslationsSection from './TranslationsSection';
 
 const useStyles = makeStyles(() => ({}));
 
 const TranslationSidebar = () => {
   useStyles();
 
+  const { record, error } = useSelectedRecord();
+
   return (
     <Box>
-      <RowNavigation />
-      <SourceSection />
-      <IntelligibilitySection />
-      <TranslationsSection />
-      <OtherLanguagesSection />
-      <PreferencesFAB />
+      <pre>{JSON.stringify(record || error)}</pre>
+      {/* <RowNavigation /> */}
+      {/* <SourceSection /> */}
+      {/* <IntelligibilitySection /> */}
+      {/* <TranslationsSection /> */}
+      {/* <OtherLanguagesSection /> */}
+      {/* <PreferencesFAB /> */}
     </Box>
   );
 };

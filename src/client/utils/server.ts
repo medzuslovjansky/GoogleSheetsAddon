@@ -1,5 +1,6 @@
 import Server from 'gas-client';
 
+// @ts-ignore
 const { PORT } = process.env;
 
 const server = new Server({
