@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Box, makeStyles } from '@material-ui/core';
-import { useSelectedRecord } from '../hooks/useSelectedRecord';
+import { useSheets } from '../hooks/useSheets';
+import server from '../../utils/server';
 
 // import RowNavigation from './RowNavigation';
 // import SourceSection from './SourceSection';
@@ -9,16 +10,85 @@ import { useSelectedRecord } from '../hooks/useSelectedRecord';
 // import OtherLanguagesSection from './OtherLanguagesSection';
 // import TranslationsSection from './TranslationsSection';
 
+const { serverFunctions } = server;
 const useStyles = makeStyles(() => ({}));
+
+const getSheetType = (name: string | undefined) => {
+  if (!name) {
+    return null;
+  }
+
+  if (name.startsWith('Translations ')) {
+    return 'translation';
+  }
+
+  if (name.startsWith('Vocabulary ')) {
+    return 'vocabulary';
+  }
+
+  if (name.startsWith('Flavorization ')) {
+    return 'flavorization';
+  }
+
+  return null;
+};
 
 const TranslationSidebar = () => {
   useStyles();
 
-  const { record, error } = useSelectedRecord();
+  const { busy, position, error, navigate } = useSheets();
+
+  const updateSomething = useCallback(async () => {
+    if (position.record) {
+      await serverFunctions.updateRow({
+        rowIndex: position.range.rowIndex,
+        record: {
+          helperWords: 'hoho',
+        },
+      });
+    }
+  }, [position]);
+
+  const testIndex = useCallback(() => {
+    navigate.index(42);
+  }, [navigate.index]);
+
+  const testId = useCallback(() => {
+    navigate.id('Vocabulary [ISV]', '64');
+  }, [navigate.id]);
 
   return (
     <Box>
-      <pre>{JSON.stringify(record || error)}</pre>
+      <h2>{getSheetType(position.sheet?.name)}</h2>
+      <button disabled={busy} onClick={updateSomething}>
+        Hoho
+      </button>
+      <button disabled={busy} onClick={navigate.first}>
+        First
+      </button>
+      <button disabled={busy} onClick={navigate.previous}>
+        Prev
+      </button>
+      <button disabled={busy} onClick={navigate.next}>
+        Next
+      </button>
+      <button disabled={busy} onClick={navigate.last}>
+        Last
+      </button>
+      <button disabled={busy} onClick={testIndex}>
+        42th
+      </button>
+      <button disabled={busy} onClick={testId}>
+        isv.id=64
+      </button>
+      <pre
+        style={{
+          backgroundColor: error ? 'lightpink' : 'transparent',
+          whiteSpace: 'pre-wrap',
+        }}
+      >
+        {error ? error.toString() : JSON.stringify(position, null, 2)}
+      </pre>
       {/* <RowNavigation /> */}
       {/* <SourceSection /> */}
       {/* <IntelligibilitySection /> */}

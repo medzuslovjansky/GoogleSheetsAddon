@@ -7,7 +7,7 @@
     "url": "https://github.com/enuchi/React-Google-Apps-Script.git"
   },
   "scripts": {
-    "test": "test",
+    "test": "jest",
     "login": "clasp login",
     "setup": "rimraf .clasp.json && clasp create --type sheets --title \"My React Project\" --rootDir ./dist",
     "setup:use-id": "clasp setting rootDir dist && clasp setting scriptId",
@@ -28,6 +28,7 @@
   ],
   "author": "Elisha Nuchi",
   "license": "MIT",
+  "browserslist": "> 0.25%, not dead",
   "engines": {
     "node": ">=10.0.0",
     "npm": ">=6.0.0"
@@ -36,7 +37,9 @@
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
+    "core-js": "^3.10.2",
     "gas-client": "^0.1.0",
+    "lodash": "^4.17.21",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-bootstrap": "^1.3.0",
@@ -53,6 +56,9 @@
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-react": "^7.10.4",
     "@google/clasp": "^2.3.0",
+    "@types/jest": "^26.0.22",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "babel-plugin-add-module-exports": "^1.0.2",
@@ -83,6 +89,8 @@
     "google-apps-script-webpack-dev-server": "^1.0.0",
     "html-webpack-inline-source-plugin": "0.0.10",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^26.6.3",
+    "jest-circus": "^26.6.3",
     "mkdirp": "^1.0.4",
     "module-to-cdn": "^3.1.5",
     "prettier": "^1.19.1",
@@ -90,7 +98,9 @@
     "style-loader": "^1.2.1",
     "tern": "^0.24.3",
     "terser-webpack-plugin": "^2.3.7",
+    "ts-jest": "^26.5.5",
     "ts-loader": "^8.0.2",
+    "ts-node": "^9.1.1",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
