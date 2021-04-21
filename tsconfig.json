@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
-    "types": ["gas-types-detailed"],
+    "types": ["gas-types-detailed", "jest"],
+    "target": "es2018",
+    "lib": ["dom", "es2018"],
     "jsx": "react",
+    "moduleResolution": "node",
     "esModuleInterop": true
   }
 }
