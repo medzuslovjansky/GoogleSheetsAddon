@@ -5,9 +5,9 @@ const _status = Symbol('status');
 const _resolve = Symbol('resolve');
 const _reject = Symbol('reject');
 
-export class Deferred {
+export class Deferred<T = any> {
   constructor() {
-    this[_promise] = new Promise((resolve, reject) => {
+    this[_promise] = new Promise<T>((resolve, reject) => {
       this[_status] = Deferred.PENDING;
       this[_resolve] = resolve;
       this[_reject] = reject;
@@ -18,15 +18,15 @@ export class Deferred {
     this.reject = this.reject.bind(this);
   }
 
-  static resolved(value) {
-    const deferred = new Deferred();
+  static resolved<V>(value: V) {
+    const deferred = new Deferred<V>();
     deferred.resolve(value);
     return deferred;
   }
 
-  static rejected(error) {
+  static rejected(reason: any) {
     const deferred = new Deferred();
-    deferred.reject(error);
+    deferred.reject(reason);
     return deferred;
   }
 
@@ -50,14 +50,14 @@ export class Deferred {
     return this.status === Deferred.REJECTED;
   }
 
-  resolve(value) {
+  resolve(value: T) {
     if (this[_status] === Deferred.PENDING) {
       this[_resolve](value);
       this[_status] = Deferred.RESOLVED;
     }
   }
 
-  reject(reason) {
+  reject(reason: any) {
     if (this[_status] === Deferred.PENDING) {
       this[_reject](reason);
       this[_status] = Deferred.REJECTED;

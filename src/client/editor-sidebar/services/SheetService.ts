@@ -7,8 +7,6 @@ import {
 } from '../types/server';
 import { Deferred } from '../utils/Deferred';
 
-const noop = () => {};
-
 type SheetsServiceConfig = {
   maxIdlePeriod: number;
   serverFunctions: ServerFunctions;
@@ -34,17 +32,18 @@ export class SheetsService {
     this._currentSelection = SheetsPosition.empty();
     this._isIdle = true;
     this._positionQuery = null;
-
-    this.onError = noop;
-    this.onSelectionChange = noop;
   }
 
-  public onSelectionChange: (newSelection: SheetsPosition) => any;
+  public onSelectionChange?: (newSelection: SheetsPosition) => any;
 
-  public onError: (error: any) => any;
+  public onError?: (error: any) => any;
 
   get isIdle() {
     return this._isIdle;
+  }
+
+  get currentSelection() {
+    return this._currentSelection;
   }
 
   start() {
@@ -84,7 +83,7 @@ export class SheetsService {
     try {
       if (!this._currentSelection.equals(value)) {
         this._currentSelection = new SheetsPosition(value);
-        this.onSelectionChange(this._currentSelection);
+        this.onSelectionChange?.(this._currentSelection);
       }
     } finally {
       this._enterIdleState();
@@ -95,10 +94,10 @@ export class SheetsService {
     try {
       if (!this._currentSelection.isEmpty) {
         this._currentSelection = SheetsPosition.empty();
-        this.onSelectionChange(this._currentSelection);
+        this.onSelectionChange?.(this._currentSelection);
       }
 
-      this.onError(reason);
+      this.onError?.(reason);
     } finally {
       this._enterIdleState();
     }

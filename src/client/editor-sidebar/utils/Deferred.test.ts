@@ -1,8 +1,7 @@
-const { Deferred } = require('./Deferred');
+import { Deferred } from './Deferred';
 
 describe('Deferred', () => {
-  /** @type {Deferred} */
-  let deferred;
+  let deferred: Deferred;
 
   describe('static properties', () => {
     it('should have "pending" status', () =>
@@ -33,10 +32,10 @@ describe('Deferred', () => {
       expect(deferred.promise).toBeInstanceOf(Promise));
 
     it('can be resolved', () =>
-      expect(() => deferred.resolve()).not.toThrowError());
+      expect(() => deferred.resolve(42)).not.toThrowError());
 
     it('can be rejected', () =>
-      expect(() => deferred.reject()).not.toThrowError());
+      expect(() => deferred.reject(new Error())).not.toThrowError());
 
     describe('and resolved', () => {
       beforeEach(() => deferred.resolve(42));
@@ -105,12 +104,7 @@ describe('Deferred', () => {
       deferred = Deferred.rejected(new Error('error mock'));
 
       expect(deferred.status).toBe(Deferred.REJECTED);
-      try {
-        await deferred.promise;
-        fail();
-      } catch (e) {
-        expect(e.message).toEqual('error mock');
-      }
+      await expect(deferred.promise).rejects.toThrow('error mock');
     });
   });
 });
