@@ -36,7 +36,7 @@ const getSheetType = (name: string | undefined) => {
 const TranslationSidebar = () => {
   useStyles();
 
-  const { busy, position, error, navigate } = useSheets();
+  const { position, error, navigate } = useSheets();
 
   const updateSomething = useCallback(async () => {
     if (position.record) {
@@ -60,25 +60,25 @@ const TranslationSidebar = () => {
   return (
     <Box>
       <h2>{getSheetType(position.sheet?.name)}</h2>
-      <button disabled={busy} onClick={updateSomething}>
+      <button onClick={updateSomething}>
         Hoho
       </button>
-      <button disabled={busy} onClick={navigate.first}>
+      <button onClick={navigate.first}>
         First
       </button>
-      <button disabled={busy} onClick={navigate.previous}>
+      <button onClick={navigate.previous}>
         Prev
       </button>
-      <button disabled={busy} onClick={navigate.next}>
+      <button onClick={navigate.next}>
         Next
       </button>
-      <button disabled={busy} onClick={navigate.last}>
+      <button onClick={navigate.last}>
         Last
       </button>
-      <button disabled={busy} onClick={testIndex}>
+      <button onClick={testIndex}>
         42th
       </button>
-      <button disabled={busy} onClick={testId}>
+      <button onClick={testId}>
         isv.id=64
       </button>
       <pre

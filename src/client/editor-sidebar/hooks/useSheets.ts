@@ -59,7 +59,6 @@ export function useSheets() {
   );
 
   return {
-    busy: false,
     position,
     error,
     navigate: {
