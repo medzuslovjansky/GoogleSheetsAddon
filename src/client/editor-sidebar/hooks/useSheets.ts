@@ -12,8 +12,14 @@ export function useSheets() {
       maxIdlePeriod: 1000,
     });
 
-    result.onError = setError;
-    result.onSelectionChange = setPosition;
+    result.onError = e => {
+      setError(e);
+    };
+
+    result.onSelectionChange = p => {
+      setError(null);
+      setPosition(p);
+    };
 
     return result;
   }, []);

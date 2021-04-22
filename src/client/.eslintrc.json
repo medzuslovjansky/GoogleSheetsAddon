@@ -4,7 +4,8 @@
   "extends": [
     "airbnb-base",
     "plugin:prettier/recommended",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
   "plugins": ["babel", "react", "prettier", "@typescript-eslint"],
   "env": {
@@ -25,14 +26,18 @@
     }
   },
   "rules": {
-    "prettier/prettier": "error",
-    "react/prop-types": "warn",
+    "@typescript-eslint/no-unused-vars": ["error"],
+    "@typescript-eslint/no-unused-expressions": ["error"],
     "camelcase": "warn",
-    "import/prefer-default-export": "warn",
+    "import/extensions": 0,
     "import/no-extraneous-dependencies": "warn",
+    "import/prefer-default-export": "warn",
     "no-underscore-dangle": "off",
+    "no-unused-expressions": "off",
+    "no-unused-vars": "off",
     "prefer-object-spread": "warn",
-    "import/extensions": 0
+    "prettier/prettier": "error",
+    "react/prop-types": "warn"
   },
   "settings": {
     "react": {

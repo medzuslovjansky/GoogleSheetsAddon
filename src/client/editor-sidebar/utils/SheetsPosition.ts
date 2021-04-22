@@ -1,3 +1,4 @@
+import isEqual from 'lodash/isEqual';
 import { SheetsPositionLike } from '../types/server';
 
 export class SheetsPosition implements SheetsPositionLike {
@@ -19,7 +20,11 @@ export class SheetsPosition implements SheetsPositionLike {
     const aRange = this.range?.a1Notation;
     const bRange = other.range?.a1Notation;
 
-    return aIndex === bIndex && aRange === bRange;
+    if (aIndex === bIndex && aRange === bRange) {
+      return isEqual(this.record, other.record);
+    }
+
+    return false;
   }
 
   get isEmpty() {
