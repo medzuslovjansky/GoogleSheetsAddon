@@ -50,7 +50,7 @@ const Translation = ({ automatic = false, lang, text }) => {
         </Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={text || "N/A"}
+        primary={text || 'N/A'}
         className={automatic && styles.automaticTranslation}
       />
       <ListItemSecondaryAction>

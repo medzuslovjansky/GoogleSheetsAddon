@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import server from '../../utils/server';
-import { SheetsPosition } from '../utils/SheetsPosition';
-import { SheetsService } from '../services/SheetService';
+import SheetsPosition from '../utils/SheetsPosition';
+import SheetsService from '../services/SheetsService';
 
-export function useSheets() {
+export default function useSheets() {
   const [error, setError] = useState(false);
   const [position, setPosition] = useState(SheetsPosition.empty());
   const service = useMemo(() => {

@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { Box, makeStyles } from '@material-ui/core';
-import { useSheets } from '../hooks/useSheets';
+import useSheets from '../hooks/useSheets';
 import server from '../../utils/server';
 
 // import RowNavigation from './RowNavigation';
@@ -60,27 +60,13 @@ const TranslationSidebar = () => {
   return (
     <Box>
       <h2>{getSheetType(position.sheet?.name)}</h2>
-      <button onClick={updateSomething}>
-        Hoho
-      </button>
-      <button onClick={navigate.first}>
-        First
-      </button>
-      <button onClick={navigate.previous}>
-        Prev
-      </button>
-      <button onClick={navigate.next}>
-        Next
-      </button>
-      <button onClick={navigate.last}>
-        Last
-      </button>
-      <button onClick={testIndex}>
-        42th
-      </button>
-      <button onClick={testId}>
-        isv.id=64
-      </button>
+      <button onClick={updateSomething}>Hoho</button>
+      <button onClick={navigate.first}>First</button>
+      <button onClick={navigate.previous}>Prev</button>
+      <button onClick={navigate.next}>Next</button>
+      <button onClick={navigate.last}>Last</button>
+      <button onClick={testIndex}>42th</button>
+      <button onClick={testId}>isv.id=64</button>
       <pre
         style={{
           backgroundColor: error ? 'lightpink' : 'transparent',

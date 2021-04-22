@@ -1,18 +1,18 @@
-import { SheetsPosition } from '../utils/SheetsPosition';
+import SheetsPosition from '../utils/SheetsPosition';
 import {
   MoveCursorOptions,
   ServerFunctions,
   SheetsPositionLike,
   UpdateRowOptions,
 } from '../types/server';
-import { Deferred } from '../utils/Deferred';
+import Deferred from '../utils/Deferred';
 
 type SheetsServiceConfig = {
   maxIdlePeriod: number;
   serverFunctions: ServerFunctions;
 };
 
-export class SheetsService {
+export default class SheetsService {
   private readonly _serverFunctions: ServerFunctions;
 
   private readonly _maxIdlePeriod: number;

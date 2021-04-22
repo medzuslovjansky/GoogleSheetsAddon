@@ -1,11 +1,11 @@
-const noop = () => {};
+import noop from 'lodash/noop';
 
 const _promise = Symbol('promise');
 const _status = Symbol('status');
 const _resolve = Symbol('resolve');
 const _reject = Symbol('reject');
 
-export class Deferred<T = any> {
+export default class Deferred<T = any> {
   constructor() {
     this[_promise] = new Promise<T>((resolve, reject) => {
       this[_status] = Deferred.PENDING;

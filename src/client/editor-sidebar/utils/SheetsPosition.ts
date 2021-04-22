@@ -1,7 +1,7 @@
 import isEqual from 'lodash/isEqual';
 import { SheetsPositionLike } from '../types/server';
 
-export class SheetsPosition implements SheetsPositionLike {
+export default class SheetsPosition implements SheetsPositionLike {
   public readonly sheet: SheetsPositionLike['sheet'];
 
   public readonly range: SheetsPositionLike['range'];
