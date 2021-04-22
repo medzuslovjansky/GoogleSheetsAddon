@@ -1,4 +1,4 @@
-import { Deferred } from './Deferred';
+import Deferred from './Deferred';
 
 describe('Deferred', () => {
   let deferred: Deferred;
