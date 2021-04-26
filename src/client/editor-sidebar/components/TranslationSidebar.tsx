@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
 import { Box, makeStyles } from '@material-ui/core';
+import * as steenUtils from '@interslavic/steen-utils';
 import useSheets from '../hooks/useSheets';
 import server from '../../utils/server';
+import getSheetType from '../../../common/getSheetType';
 
 // import RowNavigation from './RowNavigation';
 // import SourceSection from './SourceSection';
@@ -12,26 +14,6 @@ import server from '../../utils/server';
 
 const { serverFunctions } = server;
 const useStyles = makeStyles(() => ({}));
-
-const getSheetType = (name: string | undefined) => {
-  if (!name) {
-    return null;
-  }
-
-  if (name.startsWith('Translations ')) {
-    return 'translation';
-  }
-
-  if (name.startsWith('Vocabulary ')) {
-    return 'vocabulary';
-  }
-
-  if (name.startsWith('Flavorization ')) {
-    return 'flavorization';
-  }
-
-  return null;
-};
 
 const TranslationSidebar = () => {
   useStyles();
@@ -57,9 +39,19 @@ const TranslationSidebar = () => {
     navigate.id('Vocabulary [ISV]', '64');
   }, [navigate.id]);
 
+  const sheetType = getSheetType(position.sheet?.name);
+
+  let lemmas: steenUtils.core.Lemma[] = [];
+  if (sheetType === 'translation' && position.record) {
+    const synset = steenUtils.parse.synset(position.record.translations, {
+      isPhrase: false,
+    });
+    lemmas = [...synset.lemmas()];
+  }
+
   return (
     <Box>
-      <h2>{getSheetType(position.sheet?.name)}</h2>
+      <h2>{sheetType}</h2>
       <button onClick={updateSomething}>Hoho</button>
       <button onClick={navigate.first}>First</button>
       <button onClick={navigate.previous}>Prev</button>
@@ -75,6 +67,11 @@ const TranslationSidebar = () => {
       >
         {error ? error.toString() : JSON.stringify(position, null, 2)}
       </pre>
+      <ol>
+        {lemmas.map((l, i) => (
+          <li key={i}>{String(l)}</li>
+        ))}
+      </ol>
       {/* <RowNavigation /> */}
       {/* <SourceSection /> */}
       {/* <IntelligibilitySection /> */}

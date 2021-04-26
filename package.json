@@ -1,10 +1,11 @@
 {
-  "name": "react-google-apps-script",
+  "name": "@interslavic/google-sheets-addon",
+  "private": true,
   "version": "2.0.0",
-  "description": "Starter project for using React with Google Apps Script",
+  "description": "TODO",
   "repository": {
     "type": "git",
-    "url": "https://github.com/enuchi/React-Google-Apps-Script.git"
+    "url": "https://github.com/medzuslovjansky/GoogleSheetsAddon.git"
   },
   "scripts": {
     "test": "jest",
@@ -26,7 +27,9 @@
     "script",
     "sheets"
   ],
-  "author": "Elisha Nuchi",
+  "authors": [
+    "Yaroslav Serhieiev <noomorph@gmail.com>"
+  ],
   "license": "MIT",
   "browserslist": "> 0.25%, not dead",
   "engines": {
@@ -34,6 +37,7 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
+    "@interslavic/steen-utils": "^1.1.1",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
