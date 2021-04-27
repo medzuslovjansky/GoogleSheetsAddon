@@ -1,14 +1,18 @@
 import isNumber from 'lodash/isNumber';
-import zipObject from 'lodash/zipObject';
-import { getSheetByName } from './helpers/getSheetByName';
+import getSheetByName from './helpers/getSheetByName';
+import packRecord from './helpers/packRecord';
 import {
-  findIdInFirstColumn,
   moveCursorBy,
   moveCursorToIndex,
+  findRowIndexByIdColumn,
 } from './helpers/cursorHelpers';
+import getSheetType from '../common/getSheetType';
+import buildSheetName from '../common/buildSheetName';
 
 export const getCurrentPosition = () => {
-  const activeSheet = SpreadsheetApp.getActive().getActiveSheet();
+  const before = Date.now();
+  const app = SpreadsheetApp.getActive();
+  const activeSheet = app.getActiveSheet();
   const activeRange = activeSheet.getActiveRange();
   const result = {
     sheet: {
@@ -22,17 +26,22 @@ export const getCurrentPosition = () => {
         }
       : null,
     record: null,
+    isv: null,
+    duration: NaN,
   };
 
-  const rowIndex = result.range?.rowIndex;
-  if (rowIndex > 1) {
-    const n = activeSheet.getLastColumn();
-    const currentRowRange = activeSheet.getRange(rowIndex, 1, 1, n);
-    const [currentHeader] = activeSheet.getSheetValues(1, 1, 1, n);
-    const [currentValues] = currentRowRange.getValues();
-    result.record = zipObject(currentHeader, currentValues);
+  if (result.range?.rowIndex) {
+    result.record = packRecord(activeSheet, result.range.rowIndex);
   }
 
+  if (result.record && getSheetType(result.sheet.name) === 'translation') {
+    result.isv = packRecord(
+      app.getSheetByName(buildSheetName('vocabulary')),
+      result.range.rowIndex
+    );
+  }
+
+  result.duration = Date.now() - before;
   return result;
 };
 
@@ -53,9 +62,14 @@ export const updateRow = ({ sheetName, rowIndex, record }) => {
 
   const sheet = getSheetByName(sheetName);
   const n = sheet.getLastColumn();
-  const [sheetHeader] = sheet.getSheetValues(1, 1, 1, n);
+  const [sheetHeader] = (sheet.getSheetValues(
+    1,
+    1,
+    1,
+    n
+  ) as unknown) as string[][];
   const rowRange = sheet.getRange(rowIndex, 1, 1, n);
-  const [rowValues] = rowRange.getValues();
+  const [rowValues] = rowRange.getValues() as any[];
 
   // eslint-disable-next-line no-restricted-syntax
   for (const [key, value] of Object.entries(record)) {
@@ -77,7 +91,7 @@ export const moveCursor = ({ sheetName, id, rowIndex, offset }) => {
   } else if (isNumber(offset)) {
     moveCursorBy(sheet, offset);
   } else if (id) {
-    findIdInFirstColumn(sheet, id);
+    moveCursorToIndex(sheet, findRowIndexByIdColumn(sheet, id));
   } else {
     throw new Error('Cannot move cursor when no directions were given');
   }

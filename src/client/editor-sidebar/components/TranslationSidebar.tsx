@@ -39,13 +39,15 @@ const TranslationSidebar = () => {
     navigate.id('Vocabulary [ISV]', '64');
   }, [navigate.id]);
 
-  const sheetType = getSheetType(position.sheet?.name);
+  const sheetType = position.sheet ? getSheetType(position.sheet.name) : null;
 
   let lemmas: steenUtils.core.Lemma[] = [];
-  if (sheetType === 'translation' && position.record) {
+  if (sheetType === 'translation' && position.record && position.isv) {
+    const pos = steenUtils.parse.partOfSpeech(position.isv.partOfSpeech);
     const synset = steenUtils.parse.synset(position.record.translations, {
-      isPhrase: false,
+      isPhrase: pos?.name === 'phrase',
     });
+
     lemmas = [...synset.lemmas()];
   }
 
