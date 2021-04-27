@@ -1,7 +1,4 @@
-/**
- * @param {string | undefined} name
- */
-export const getSheetByName = name => {
+export default function getSheetByName(name: string | undefined) {
   const app = SpreadsheetApp.getActive();
   if (!name) {
     return app.getActiveSheet();
@@ -13,4 +10,4 @@ export const getSheetByName = name => {
   }
 
   return sheet;
-};
+}

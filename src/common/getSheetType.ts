@@ -1,6 +1,8 @@
-export default function getSheetType(name: string | undefined) {
+import { SheetType } from './SheetType';
+
+export default function getSheetType(name: string): SheetType {
   if (!name) {
-    return null;
+    throw new Error('Cannot get sheet type if no name is given');
   }
 
   if (name.startsWith('Translations ')) {
@@ -15,5 +17,5 @@ export default function getSheetType(name: string | undefined) {
     return 'flavorization';
   }
 
-  return null;
+  return 'other';
 }

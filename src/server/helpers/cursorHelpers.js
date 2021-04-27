@@ -20,7 +20,7 @@ export const moveCursorBy = (sheet, rowsCount) => {
  * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet
  * @param {id} any
  */
-export const findIdInFirstColumn = (sheet, id) => {
+export const findRowIndexByIdColumn = (sheet, id) => {
   const range = sheet
     .getRange('A:A')
     .createTextFinder(`${id}`)
@@ -28,6 +28,8 @@ export const findIdInFirstColumn = (sheet, id) => {
     .findNext();
 
   if (range) {
-    range.activateAsCurrentCell();
+    return range.getRowIndex();
   }
+
+  return 0;
 };

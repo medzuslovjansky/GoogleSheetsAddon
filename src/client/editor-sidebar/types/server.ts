@@ -8,6 +8,7 @@ export interface SheetsPositionLike {
     a1Notation: string;
   } | null;
   readonly record: Record<string, any> | null;
+  readonly isv: Record<string, any> | null;
 }
 
 type MoveCursorRelativeOptions = {

@@ -8,10 +8,22 @@ export default class SheetsPosition implements SheetsPositionLike {
 
   public readonly record: SheetsPositionLike['record'];
 
-  constructor({ sheet = null, range = null, record = null }) {
+  public readonly isv: SheetsPositionLike['isv'];
+
+  public readonly duration: number;
+
+  constructor({
+    sheet = null,
+    range = null,
+    record = null,
+    isv = null,
+    duration = NaN,
+  }) {
     this.sheet = sheet;
     this.range = range;
     this.record = record;
+    this.isv = isv;
+    this.duration = duration;
   }
 
   equals(other: SheetsPositionLike): boolean {
