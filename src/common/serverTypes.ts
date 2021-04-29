@@ -35,8 +35,16 @@ export type UpdateRowOptions = {
   record: Record<string, any>;
 };
 
+export type GetSheetRecordsOptions = {
+  includeColumns: string[];
+};
+
 export interface ServerFunctions {
   getCurrentPosition(): Promise<SheetsPositionLike>;
   moveCursor(params: MoveCursorOptions): Promise<SheetsPositionLike>;
   updateRow(params: UpdateRowOptions): Promise<void>;
+  getSheetRecords(
+    sheetName: string,
+    options: GetSheetRecordsOptions
+  ): Promise<Record<string, string>[]>;
 }
