@@ -1,6 +1,6 @@
 import noop from 'lodash/noop';
 import SheetsService from './SheetsService';
-import { ServerFunctions } from '../types/server';
+import { ServerFunctions } from '../../../common/serverTypes';
 
 describe('SheetsService', () => {
   let service: SheetsService;
@@ -13,6 +13,7 @@ describe('SheetsService', () => {
       getCurrentPosition: jest.fn().mockReturnValue(new Promise(noop)),
       moveCursor: jest.fn().mockReturnValue(new Promise(noop)),
       updateRow: jest.fn().mockReturnValue(new Promise(noop)),
+      getSheetRecords: jest.fn().mockReturnValue(new Promise(noop)),
     };
 
     service = new SheetsService({

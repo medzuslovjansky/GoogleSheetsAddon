@@ -8,6 +8,8 @@ import {
 } from './helpers/cursorHelpers';
 import getSheetType from '../common/getSheetType';
 import buildSheetName from '../common/buildSheetName';
+import { GetSheetRecordsOptions } from '../common/serverTypes';
+import getSheetRecords from './helpers/getSheetRecords';
 
 export const getCurrentPosition = () => {
   const before = Date.now();
@@ -98,3 +100,5 @@ export const moveCursor = ({ sheetName, id, rowIndex, offset }) => {
 
   return getCurrentPosition();
 };
+
+export { getSheetRecords };

@@ -17,5 +17,9 @@ export default function getSheetType(name: string): SheetType {
     return 'flavorization';
   }
 
+  if (name === 'I18N') {
+    return 'i18n';
+  }
+
   return 'other';
 }

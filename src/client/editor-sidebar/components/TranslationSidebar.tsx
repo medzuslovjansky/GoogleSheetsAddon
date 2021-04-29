@@ -4,6 +4,8 @@ import * as steenUtils from '@interslavic/steen-utils';
 import useSheets from '../hooks/useSheets';
 import server from '../../utils/server';
 import getSheetType from '../../../common/getSheetType';
+import useTranslations from '../hooks/useTranslations';
+import extractLanguageFromSheetName from '../../../common/extractLanguageFromSheetName';
 
 // import RowNavigation from './RowNavigation';
 // import SourceSection from './SourceSection';
@@ -18,7 +20,17 @@ const useStyles = makeStyles(() => ({}));
 const TranslationSidebar = () => {
   useStyles();
 
-  const { position, error, navigate } = useSheets();
+  const {
+    position,
+    error: sheetsError,
+    navigate,
+    ready: sheetsReady,
+  } = useSheets();
+  const { i18n, error: i18nError, ready: i18nReady } = useTranslations({
+    language: extractLanguageFromSheetName(position.sheet?.name),
+  });
+  const error = sheetsError || i18nError;
+  const ready = sheetsReady && i18nReady;
 
   const updateSomething = useCallback(async () => {
     if (position.record) {
@@ -51,9 +63,26 @@ const TranslationSidebar = () => {
     lemmas = [...synset.lemmas()];
   }
 
+  if (!ready || error) {
+    return (
+      <Box>
+        <pre
+          style={{
+            backgroundColor: error ? 'lightpink' : 'transparent',
+            whiteSpace: 'pre-wrap',
+          }}
+        >
+          {error
+            ? `${error.message}\n${error.stack}`
+            : JSON.stringify(position, null, 2)}
+        </pre>
+      </Box>
+    );
+  }
+
   return (
     <Box>
-      <h2>{sheetType}</h2>
+      <h2>{i18n('UI_INTERSLAVIC_CARD_HEADER')}</h2>
       <button onClick={updateSomething}>Hoho</button>
       <button onClick={navigate.first}>First</button>
       <button onClick={navigate.previous}>Prev</button>
@@ -61,14 +90,6 @@ const TranslationSidebar = () => {
       <button onClick={navigate.last}>Last</button>
       <button onClick={testIndex}>42th</button>
       <button onClick={testId}>isv.id=64</button>
-      <pre
-        style={{
-          backgroundColor: error ? 'lightpink' : 'transparent',
-          whiteSpace: 'pre-wrap',
-        }}
-      >
-        {error ? error.toString() : JSON.stringify(position, null, 2)}
-      </pre>
       <ol>
         {lemmas.map((l, i) => (
           <li key={i}>{String(l)}</li>

@@ -60,6 +60,7 @@ export default function useSheets() {
 
   return {
     position,
+    ready: !position.isEmpty,
     error,
     navigate: {
       first: goFirst,
