@@ -8,7 +8,6 @@ import {
 } from './helpers/cursorHelpers';
 import getSheetType from '../common/getSheetType';
 import buildSheetName from '../common/buildSheetName';
-import { GetSheetRecordsOptions } from '../common/serverTypes';
 import getSheetRecords from './helpers/getSheetRecords';
 
 export const getCurrentPosition = () => {
@@ -37,9 +36,10 @@ export const getCurrentPosition = () => {
   }
 
   if (result.record && getSheetType(result.sheet.name) === 'translation') {
+    const vocabularySheet = app.getSheetByName(buildSheetName('vocabulary'));
     result.isv = packRecord(
-      app.getSheetByName(buildSheetName('vocabulary')),
-      result.range.rowIndex
+      vocabularySheet,
+      findRowIndexByIdColumn(vocabularySheet, result.record.id)
     );
   }
 
