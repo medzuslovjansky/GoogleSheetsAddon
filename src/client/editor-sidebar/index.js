@@ -1,5 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import TranslationSidebar from './components/TranslationSidebar';
+import Sidebar from './containers/Sidebar';
 
-ReactDOM.render(<TranslationSidebar />, document.getElementById('index'));
+ReactDOM.render(<Sidebar />, document.getElementById('index'));

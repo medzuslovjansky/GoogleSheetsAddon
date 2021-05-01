@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import server from '../../utils/server';
 import SheetsPosition from '../utils/SheetsPosition';
 import SheetsService from '../services/SheetsService';
+import { NavigationCallbacks } from '../contexts/SheetsPositionContext';
 
 export default function useSheets() {
   const [error, setError] = useState(false);
@@ -54,21 +55,27 @@ export default function useSheets() {
   );
 
   const goId = useCallback(
-    (sheetName: string, id: string) => service.moveCursor({ sheetName, id }),
+    (id: string, sheetName?: string) =>
+      service.moveCursor({
+        id,
+        sheetName,
+      }),
     []
   );
 
+  const navigate: NavigationCallbacks = {
+    first: goFirst,
+    previous: goPrevious,
+    index: goIndex,
+    id: goId,
+    next: goNext,
+    last: goLast,
+  };
+
   return {
     position,
-    ready: !position.isEmpty,
     error,
-    navigate: {
-      first: goFirst,
-      previous: goPrevious,
-      index: goIndex,
-      id: goId,
-      next: goNext,
-      last: goLast,
-    },
+    navigate,
+    ready: !position.isEmpty,
   };
 }
