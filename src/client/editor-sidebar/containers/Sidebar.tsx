@@ -1,11 +1,4 @@
 import React, { useMemo } from 'react';
-import {
-  Box,
-  Card,
-  CircularProgress,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
 import useSheets from '../hooks/useSheets';
 import getSheetType from '../../../common/getSheetType';
 import useTranslations from '../hooks/useTranslations';
@@ -14,7 +7,8 @@ import SheetsPositionContext, {
   SheetsPositionContextData,
 } from '../contexts/SheetsPositionContext';
 import TranslationSidebar from './TranslationSidebar';
-import Pre from '../components/Pre';
+import CircularProgressBox from '../components/auxiliary/CircularProgressBox';
+import InspectJSONBox from '../components/auxiliary/InspectJSONBox';
 
 const Sidebar = () => {
   const {
@@ -24,9 +18,17 @@ const Sidebar = () => {
     ready: sheetsReady,
   } = useSheets();
 
+  if (sheetsError) {
+    throw sheetsError;
+  }
+
   const { i18n, error: i18nError, ready: i18nReady } = useTranslations({
     language: extractLanguageFromSheetName(position.sheet?.name),
   });
+
+  if (i18nError) {
+    throw i18nError;
+  }
 
   const contextValue = useMemo<SheetsPositionContextData>(
     () => ({
@@ -37,27 +39,10 @@ const Sidebar = () => {
     [i18n, position, navigate]
   );
 
-  const error = sheetsError || i18nError;
   const ready = sheetsReady && i18nReady;
 
   if (!ready) {
-    return (
-      <Box>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card variant="outlined" color="error">
-        <Pre>
-          {error.message}
-          {'\n'}
-          {error.stack}
-        </Pre>
-      </Card>
-    );
+    return <CircularProgressBox />;
   }
 
   const sheetType = position.sheet ? getSheetType(position.sheet.name) : null;
@@ -69,11 +54,7 @@ const Sidebar = () => {
     );
   }
 
-  return (
-    <Card variant="outlined">
-      <Pre>{JSON.stringify(position, null, 2)}</Pre>
-    </Card>
-  );
+  return <InspectJSONBox contents={position} />;
 };
 
 export default Sidebar;
