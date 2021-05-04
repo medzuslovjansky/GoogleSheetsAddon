@@ -19,14 +19,14 @@ export default function verbalizePartOfSpeech(p: PartOfSpeech) {
       break;
     case 'noun':
       name = 'POS_NOUN';
-      if (p.animate) annotations.push('POS_NOUN_ANIMATE');
-      if (!p.animate) annotations.push('POS_NOUN_INANIMATE');
-      if (p.feminine) annotations.push('POS_NOUN_FEMININE');
-      if (p.indeclinable) annotations.push('POS_NOUN_INDECLINABLE');
       if (p.masculine) annotations.push('POS_NOUN_MASCULINE');
+      if (p.feminine) annotations.push('POS_NOUN_FEMININE');
       if (p.neuter) annotations.push('POS_NOUN_NEUTER');
       if (p.plural) annotations.push('POS_NOUN_PLURAL');
       if (p.singular) annotations.push('POS_NOUN_SINGULAR');
+      if (p.animate) annotations.push('POS_NOUN_ANIMATE');
+      if (!p.animate) annotations.push('POS_NOUN_INANIMATE');
+      if (p.indeclinable) annotations.push('POS_NOUN_INDECLINABLE');
       break;
     case 'numeral':
       name = 'POS_NUMERAL';
@@ -68,9 +68,9 @@ export default function verbalizePartOfSpeech(p: PartOfSpeech) {
       name = 'POS_VERB';
       if (p.auxiliary) annotations.push('POS_VERB_AUXILIARY');
       if (p.imperfective) annotations.push('POS_VERB_IMPERFECTIVE');
-      if (p.intransitive) annotations.push('POS_VERB_INTRANSITIVE');
       if (p.perfective) annotations.push('POS_VERB_PERFECTIVE');
       if (p.reflexive) annotations.push('POS_VERB_REFLEXIVE');
+      if (p.intransitive) annotations.push('POS_VERB_INTRANSITIVE');
       if (p.transitive) annotations.push('POS_VERB_TRANSITIVE');
       break;
     default:

@@ -52,23 +52,11 @@ const IntelligibilitySection = () => {
       <AccordionDetails className={styles.accordionDetails}>
         <FormControlLabel
           className={styles.line}
-          control={
-            <Checkbox
-              checked={true}
-              onChange={() => {}}
-              name="verified"
-              color="primary"
-            />
-          }
+          control={<Checkbox checked={true} name="verified" color="primary" />}
           label="Verified"
         />
         <FormControl variant="outlined" className={styles.formControl}>
-          <Select
-            classes={{ select: styles.select }}
-            value={'-'}
-            displayEmpty
-            onChange={() => {}}
-          >
+          <Select classes={{ select: styles.select }} value={'-'} displayEmpty>
             <MenuItem value="">
               <ListItemIcon>
                 <HelpOutline />

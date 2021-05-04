@@ -1,14 +1,22 @@
 import React, { useContext } from 'react';
-import { Box } from '@material-ui/core';
-import RecordNavigation from '../components/RecordNavigation';
-import SourceSection from '../components/SourceSection';
+import { Box, makeStyles } from '@material-ui/core';
+import RecordNavigation from '../components/widgets/RecordNavigation';
+import SourceSection from '../components/sections/SourceSection';
 import SheetsPositionContext from '../contexts/SheetsPositionContext';
+import OtherLanguagesSection from '../components/sections/otherLanguages';
+
+const useStyles = makeStyles({
+  container: {
+    minHeight: '100vh',
+  },
+});
 
 const TranslationSidebar = () => {
   const sheetsPosition = useContext(SheetsPositionContext);
+  const styles = useStyles();
 
   return (
-    <Box>
+    <Box className={styles.container}>
       <RecordNavigation
         currentIndex={sheetsPosition.position.range?.rowIndex}
         goFirst={sheetsPosition.navigate.first}
@@ -17,10 +25,8 @@ const TranslationSidebar = () => {
         goNext={sheetsPosition.navigate.next}
         goLast={sheetsPosition.navigate.last}
       />
-      <SourceSection
-        lemma={sheetsPosition.position.isv?.lemma}
-        partOfSpeech={sheetsPosition.position.isv?.partOfSpeech}
-      />
+      <SourceSection record={sheetsPosition.position.isv} />
+      <OtherLanguagesSection record={sheetsPosition.position.isv} />
     </Box>
   );
 };
