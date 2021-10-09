@@ -1,0 +1,16 @@
+diff --git a/node_modules/dynamic-cdn-webpack-plugin/lib/index.js b/node_modules/dynamic-cdn-webpack-plugin/lib/index.js
+index fefbdb4..ac50ac9 100644
+--- a/node_modules/dynamic-cdn-webpack-plugin/lib/index.js
++++ b/node_modules/dynamic-cdn-webpack-plugin/lib/index.js
+@@ -171,7 +171,10 @@ class DynamicCdnWebpackPlugin {
+         includeAssetsPlugin.apply(compiler);
+ 
+         compiler.hooks.afterCompile.tapAsync(pluginName, (compilation, cb) => {
+-            const assets = Object.values(this.modulesFromCdn).map(moduleFromCdn => moduleFromCdn.url);
++            const assets = Object.values(this.modulesFromCdn).map(moduleFromCdn => ({
++              path: moduleFromCdn.url,
++              attributes: { 'crossorigin': true },
++            }));
+ 
+             // HACK: Calling the constructor directly is not recomended
+             //       But that's the only secure way to edit `assets` afterhand
