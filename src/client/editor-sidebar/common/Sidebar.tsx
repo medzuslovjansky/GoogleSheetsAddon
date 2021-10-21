@@ -1,14 +1,15 @@
 import React, { useMemo } from 'react';
-import useSheets from '../hooks/useSheets';
+import useSheets from './hooks/useSheets';
 import getSheetType from '../../../common/getSheetType';
-import useTranslations from '../hooks/useTranslations';
+import useTranslations from './hooks/useTranslations';
 import extractLanguageFromSheetName from '../../../common/extractLanguageFromSheetName';
 import SheetsPositionContext, {
   SheetsPositionContextData,
-} from '../contexts/SheetsPositionContext';
-import TranslationSidebar from './TranslationSidebar';
-import CircularProgressBox from '../components/auxiliary/CircularProgressBox';
-import InspectJSONBox from '../components/auxiliary/InspectJSONBox';
+} from './contexts/SheetsPositionContext';
+import CircularProgressBox from './components/CircularProgressBox';
+import InspectJSONBox from './components/InspectJSONBox';
+import RulesSidebar from '../rules/sidebar';
+import DictionarySidebar from '../dictionary/sidebar';
 
 const Sidebar = () => {
   const {
@@ -46,10 +47,19 @@ const Sidebar = () => {
   }
 
   const sheetType = position.sheet ? getSheetType(position.sheet.name) : null;
-  if (sheetType === 'translation') {
+
+  if (sheetType === 'flavorization') {
     return (
       <SheetsPositionContext.Provider value={contextValue}>
-        <TranslationSidebar />
+        <RulesSidebar />
+      </SheetsPositionContext.Provider>
+    );
+  }
+
+  if (sheetType === 'dictionary') {
+    return (
+      <SheetsPositionContext.Provider value={contextValue}>
+        <DictionarySidebar />
       </SheetsPositionContext.Provider>
     );
   }

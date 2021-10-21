@@ -1,15 +1,10 @@
-import {
-  Button,
-  ButtonGroup,
-  OutlinedInput,
-  withStyles,
-} from '@material-ui/core';
+import { Button, ButtonGroup, OutlinedInput } from '@mui/material';
 import {
   ChevronLeft,
   ChevronRight,
   FirstPage,
   LastPage,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import React, { KeyboardEventHandler, ReactEventHandler } from 'react';
 
 type RecordNavigationProps = {
@@ -21,21 +16,6 @@ type RecordNavigationProps = {
   goNext: () => void;
   goLast: () => void;
 };
-
-const ButtonGroupInput = withStyles(theme => ({
-  root: {
-    '&': {
-      minWidth: '8ch',
-    },
-    '& .MuiInputBase-input': {
-      padding: 0,
-      textAlign: 'center',
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: theme.palette.primary.light,
-    },
-  },
-}))(OutlinedInput);
 
 const RecordNavigation = (props: RecordNavigationProps) => {
   const [lastIndex, setLastIndex] = React.useState(props.currentIndex);
@@ -75,8 +55,20 @@ const RecordNavigation = (props: RecordNavigationProps) => {
       <Button onClick={props.goPrevious}>
         <ChevronLeft />
       </Button>
-      <ButtonGroupInput
+      <OutlinedInput
         color={'primary'}
+        sx={{
+          '&.MuiButtonGroup-grouped': {
+            minWidth: '8ch',
+          },
+          '& .MuiInputBase-input': {
+            padding: 0,
+            textAlign: 'center',
+          },
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme => theme.palette.primary.light,
+          },
+        }}
         value={localIndex}
         onChange={onChange}
         onBlur={onBlur}

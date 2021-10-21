@@ -1,6 +1,6 @@
 export type SheetType =
+  | 'dictionary'
   | 'translation'
-  | 'vocabulary'
   | 'flavorization'
   | 'i18n'
   | 'other';

@@ -5,16 +5,16 @@ export default function getSheetType(name: string): SheetType {
     throw new Error('Cannot get sheet type if no name is given');
   }
 
-  if (name.startsWith('Translations ')) {
-    return 'translation';
+  if (name === 'words') {
+    return 'dictionary';
   }
 
-  if (name.startsWith('Vocabulary ')) {
-    return 'vocabulary';
-  }
-
-  if (name.startsWith('Flavorization ')) {
+  if (name.startsWith('rules ')) {
     return 'flavorization';
+  }
+
+  if (name.startsWith('translations ')) {
+    return 'translation';
   }
 
   if (name === 'I18N') {

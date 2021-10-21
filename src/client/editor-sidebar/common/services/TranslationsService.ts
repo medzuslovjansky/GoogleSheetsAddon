@@ -1,5 +1,5 @@
-import { ServerFunctions } from '../../../common/serverTypes';
-import buildSheetName from '../../../common/buildSheetName';
+import { ServerFunctions } from '../../../../common/serverTypes';
+import buildSheetName from '../../../../common/buildSheetName';
 
 type TranslationsServiceConfig = {
   serverFunctions: ServerFunctions;

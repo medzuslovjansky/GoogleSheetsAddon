@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import server from '../../utils/server';
+import server from '../../../utils/server';
 import TranslationsService from '../services/TranslationsService';
 
 type UseTranslationsOptions = {

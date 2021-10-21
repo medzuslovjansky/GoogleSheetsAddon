@@ -36,10 +36,10 @@ export const getCurrentPosition = () => {
   }
 
   if (result.record && getSheetType(result.sheet.name) === 'translation') {
-    const vocabularySheet = app.getSheetByName(buildSheetName('vocabulary'));
+    const dictionarySheet = app.getSheetByName(buildSheetName('dictionary'));
     result.isv = packRecord(
-      vocabularySheet,
-      findRowIndexByIdColumn(vocabularySheet, result.record.id)
+      dictionarySheet,
+      findRowIndexByIdColumn(dictionarySheet, result.record.id)
     );
   }
 

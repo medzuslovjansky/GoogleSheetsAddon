@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { SheetsPositionLike } from '../../../common/serverTypes';
+import { SheetsPositionLike } from '../../../../common/serverTypes';
 
 export default class SheetsPosition implements SheetsPositionLike {
   public readonly sheet: SheetsPositionLike['sheet'];

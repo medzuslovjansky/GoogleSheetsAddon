@@ -1,6 +1,6 @@
 import noop from 'lodash/noop';
 import SheetsService from './SheetsService';
-import { ServerFunctions } from '../../../common/serverTypes';
+import { ServerFunctions } from '../../../../common/serverTypes';
 
 describe('SheetsService', () => {
   let service: SheetsService;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '@material-ui/core';
+import { Card } from '@mui/material';
 import Pre from './Pre';
 
 export default function InspectJSONBox({ contents }) {

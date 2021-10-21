@@ -4,7 +4,7 @@ import {
   ServerFunctions,
   SheetsPositionLike,
   UpdateRowOptions,
-} from '../../../common/serverTypes';
+} from '../../../../common/serverTypes';
 import Deferred from '../utils/Deferred';
 
 type SheetsServiceConfig = {
