@@ -42,7 +42,7 @@ export type UpdateRowOptions = {
 };
 
 export type GetSheetRecordsOptions = {
-  includeColumns: string[];
+  includeColumns?: string[];
 };
 
 export interface ServerFunctions {

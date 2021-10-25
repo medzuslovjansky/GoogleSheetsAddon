@@ -1,9 +1,10 @@
+import times from 'lodash/times';
 import { unionColumnIndices } from './a1Notation';
 import Sheet = GoogleAppsScript.Spreadsheet.Sheet;
 import Range = GoogleAppsScript.Spreadsheet.Range;
 
 type GetSheetRecordsOptions = {
-  includeColumns: string[];
+  includeColumns?: string[];
 };
 
 function isFound(index: number) {
@@ -31,13 +32,13 @@ function transposeRanges(
 
 function getSelectedColumnsContents(
   sheet: Sheet,
-  columnNames: string[]
+  columnNames?: string[]
 ): string[][] {
   const columnCount = sheet.getLastColumn();
   const [header] = sheet.getSheetValues(1, 1, 1, columnCount);
   const columnMappings = columnNames
-    .map(n => 1 + header.indexOf(n as any))
-    .filter(isFound);
+    ? columnNames.map(n => 1 + header.indexOf(n as any)).filter(isFound)
+    : times(columnCount, i => i + 1);
 
   return sheet
     .getRangeList(unionColumnIndices(columnMappings))
