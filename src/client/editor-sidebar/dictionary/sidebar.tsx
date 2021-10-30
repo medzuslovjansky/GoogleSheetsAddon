@@ -1,83 +1,147 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useContext } from 'react';
 import * as razumlivost from '@interslavic/razumlivost';
+import {
+  FlavorizationIntermediate,
+  FlavorizationLevel,
+  FlavorizationTable,
+  LanguageKey,
+  TranslationAnalysis,
+} from '@interslavic/razumlivost';
 import {
   Box,
   FormControl,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   Step,
   StepButton,
   StepContent,
   Stepper,
   Typography,
-  Paper,
-  SelectChangeEvent,
 } from '@mui/material';
 import RecordNavigation from '../common/components/RecordNavigation';
 import SheetsPositionContext from '../common/contexts/SheetsPositionContext';
 import buildSheetName from '../../../common/buildSheetName';
 import server from '../../utils/server';
-import { FlavorizationRuleDTO } from '../../../../../razumlivost/dist/types';
 
-// const stepsISV = [
-//   {
-//     label: 'mlåt',
-//     description: '',
-//     alternatives: [],
-//   },
-//   {
-//     label: 'molot',
-//     description: 'ORO-OLO',
-//     alternatives: ['mlat'],
-//   },
-//   {
-//     label: 'молот',
-//     description: 'Cyrillization',
-//     alternatives: ['млат'],
-//   },
-// ];
-//
-// const stepsNational = [
-//   {
-//     label: 'молот',
-//     description: 'Translation',
-//     alternatives: [],
-//   },
-// ];
+type FlavorizationStepperProps = {
+  last: FlavorizationIntermediate;
+  level: keyof typeof FlavorizationLevel;
+};
+
+const FlavorizationStepper = (props: FlavorizationStepperProps) => {
+  const [index, setIndex] = React.useState<number>();
+
+  function FlavorizationStep(
+    step: FlavorizationIntermediate,
+    stepIndex: number
+  ) {
+    const alternatives = step.via.owner
+      .apply(step.parent)
+      .filter(i => !i.equals(step));
+
+    return (
+      <Step
+        key={stepIndex}
+        active={index === stepIndex}
+        onClick={() => setIndex(index)}
+      >
+        <StepButton sx={{ textAlign: 'left' }}>
+          <Typography variant="body2">{step.value}</Typography>
+        </StepButton>
+        <StepContent>
+          <Typography variant="subtitle2">
+            <Typography>
+              {step.via.owner.comment} (#${step.via.index})
+            </Typography>
+            {alternatives.map((a, i) => (
+              <Typography key={`alternative_${i}`} variant="body2">
+                {a.value}
+              </Typography>
+            ))}
+          </Typography>
+        </StepContent>
+      </Step>
+    );
+  }
+
+  if (!props.last) {
+    return null;
+  }
+
+  const steps = [...props.last.chain()];
+  return (
+    <Stepper nonLinear orientation="vertical">
+      {steps.map(FlavorizationStep)}
+    </Stepper>
+  );
+};
+
+type LanguagePickerProps = {
+  value: LanguageKey;
+  onChange: (value: LanguageKey) => void;
+  label: string;
+};
+
+const LanguagePicker = (props: LanguagePickerProps) => {
+  return (
+    <FormControl variant="outlined" fullWidth size="small">
+      <InputLabel id="select-language">{props.label}</InputLabel>
+      <Select
+        value={props.value}
+        onChange={e => props.onChange(e.target.value as LanguageKey)}
+        labelId="select-language"
+      >
+        <MenuItem value="ru">Russian</MenuItem>
+        <MenuItem value="uk">Ukrainian</MenuItem>
+        <MenuItem value="pl">Polish</MenuItem>
+        <MenuItem value="cs">Czech</MenuItem>
+      </Select>
+    </FormControl>
+  );
+};
+
+type AllowedFlavorizationLevel = 'Mistaken' | 'Standard' | 'Etymological';
+type FlavorizationPickerProps = {
+  value: AllowedFlavorizationLevel;
+  onChange: (value: AllowedFlavorizationLevel) => void;
+  label: string;
+};
+
+const FlavorizationPicker = (props: FlavorizationPickerProps) => {
+  return (
+    <FormControl variant="outlined" fullWidth size="small">
+      <InputLabel id="select-language">{props.label}</InputLabel>
+      <Select
+        value={props.value}
+        onChange={e =>
+          props.onChange(e.target.value as AllowedFlavorizationLevel)
+        }
+        labelId="select-language"
+      >
+        <MenuItem value="Etymological">Etymological</MenuItem>
+        <MenuItem value="Standard">Standard</MenuItem>
+        <MenuItem value="Mistaken">Mistaken</MenuItem>
+      </Select>
+    </FormControl>
+  );
+};
 
 const DictionarySidebar = () => {
   const sheetsContext = useContext(SheetsPositionContext);
-
-  // read rules from language
-  // create flavorizator if new language
-  // process current record and the corresponding language translation
-  // compare
-  // display the transformations
-
   const [error, setError] = React.useState(null);
-  const [lang, setLang] = React.useState('');
-  const onLanguageChange = useCallback(
-    (e: SelectChangeEvent) => {
-      setLang(e.target.value);
-    },
-    [setLang]
-  );
-  const [flavorizationLevel, setFlavorizationLevel] = React.useState('');
-  const onFlavorizationLevelChange = useCallback(
-    (e: SelectChangeEvent) => {
-      setFlavorizationLevel(e.target.value);
-    },
-    [setFlavorizationLevel]
-  );
-
-  const [flavorizationTable, setFlavorizationTable] = React.useState(null);
-  const [activeStepISV, setActiveStepISV] = React.useState();
-  // const [activeStepNational, setActiveStepNational] = React.useState(NaN);
+  const [flavorizationTable, setFlavorizationTable] = React.useState<
+    FlavorizationTable
+  >();
+  const [targetLanguage, setTargetLanguage] = React.useState<LanguageKey>();
+  const [flavorizationLevel, setFlavorizationLevel] = React.useState<
+    AllowedFlavorizationLevel
+  >();
 
   React.useEffect(() => {
-    if (lang) {
-      const sheetName = buildSheetName('flavorization', lang);
+    if (targetLanguage) {
+      const sheetName = buildSheetName('flavorization', targetLanguage);
       server.serverFunctions
         .getSheetRecords(sheetName, {})
         .then(rawRecords => {
@@ -90,31 +154,22 @@ const DictionarySidebar = () => {
         })
         .catch(e => setError(e));
     }
-  }, [lang]);
+  }, [targetLanguage]);
 
-  const renderStep = setter => {
-    return function FlavorizationStep(step: FlavorizationRuleDTO, index) {
-      const handleStep = () => setter(index);
+  let analysis: TranslationAnalysis;
 
-      return (
-        <Step key={index} onClick={handleStep}>
-          <StepButton sx={{ textAlign: 'left' }}>
-            <Typography>{step.name}</Typography>
-          </StepButton>
-          <StepContent>
-            <Typography variant="subtitle2">
-              {step.flavorizationLevel}
-            </Typography>
-            {step.replacements.map((text, idx) => (
-              <Typography key={`alternative_${idx}`} variant="body2">
-                {text}
-              </Typography>
-            ))}
-          </StepContent>
-        </Step>
-      );
-    };
-  };
+  if (flavorizationTable && flavorizationLevel && targetLanguage) {
+    const dto = new razumlivost.WordsDTO(sheetsContext.position.record);
+    const translationContext = new razumlivost.TranslationContext(
+      dto,
+      targetLanguage
+    );
+
+    analysis = flavorizationTable.analyzeTranslations(
+      translationContext,
+      flavorizationLevel as any
+    );
+  }
 
   const result = (
     <Box>
@@ -127,33 +182,18 @@ const DictionarySidebar = () => {
         goLast={sheetsContext.navigate.last}
       />
       <Box my={2}>
-        <FormControl variant="outlined" fullWidth size="small">
-          <InputLabel id="select-language">Target language</InputLabel>
-          <Select
-            value={lang}
-            onChange={onLanguageChange}
-            labelId="select-language"
-          >
-            <MenuItem value="ru">Russian</MenuItem>
-            <MenuItem value="uk">Ukrainian</MenuItem>
-            <MenuItem value="pl">Polish</MenuItem>
-            <MenuItem value="cs">Czech</MenuItem>
-          </Select>
-        </FormControl>
+        <LanguagePicker
+          value={targetLanguage}
+          onChange={setTargetLanguage}
+          label={'Target language:'}
+        />
       </Box>
       <Box my={2}>
-        <FormControl variant="outlined" fullWidth size="small">
-          <InputLabel id="select-language">Flavorization level</InputLabel>
-          <Select
-            value={flavorizationLevel}
-            onChange={onFlavorizationLevelChange}
-            labelId="select-language"
-          >
-            <MenuItem value="Etymological">Etymological</MenuItem>
-            <MenuItem value="Standard">Standard</MenuItem>
-            <MenuItem value="Mistaken">Mistaken</MenuItem>
-          </Select>
-        </FormControl>
+        <FlavorizationPicker
+          value={flavorizationLevel}
+          onChange={setFlavorizationLevel}
+          label={'Flavorization Level:'}
+        />
       </Box>
       <Paper variant="outlined">
         <Box p={2}>
@@ -162,37 +202,33 @@ const DictionarySidebar = () => {
             variant="body1"
             sx={{ color: theme => theme.palette.primary.main }}
           >
-            0
+            {analysis?.matches[0]?.distance.absolute} chars (
+            {analysis?.matches[0]?.distance.percent}%)
           </Typography>
         </Box>
       </Paper>
       <Typography py={2} variant="subtitle1">
         Interslavic transformation
       </Typography>
-      <Stepper nonLinear activeStep={activeStepISV} orientation="vertical">
-        {flavorizationTable &&
-        flavorizationLevel &&
-        lang &&
-        flavorizationTable.analyzeTranslations(new razumlivost.TranslationContext(
-          new razumlivost.WordsDTO(sheetsContext.position.record, lang),
-          flavorizationLevel
-        )}
-      </Stepper>
+      <FlavorizationStepper
+        last={analysis?.matches[0]?.interslavic}
+        level={flavorizationLevel}
+      />
       <Typography py={2} variant="subtitle1">
         National transformation
       </Typography>
+      <FlavorizationStepper
+        last={analysis?.matches[0]?.national}
+        level={flavorizationLevel}
+      />
     </Box>
   );
 
-  // if (error) {
-  //   throw error;
-  // }
+  if (error) {
+    throw error;
+  }
 
   return result;
 };
 
 export default DictionarySidebar;
-
-// {/*<Stepper nonLinear activeStep={activeStepNational} orientation="vertical">*/}
-// {/*  {stepsNational.map(renderStep(setActiveStepNational))}*/}
-// {/*</Stepper>*/}
