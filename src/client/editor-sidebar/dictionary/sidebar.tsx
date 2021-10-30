@@ -28,6 +28,7 @@ import server from '../../utils/server';
 type FlavorizationStepperProps = {
   last: FlavorizationIntermediate;
   level: keyof typeof FlavorizationLevel;
+  reverse?: boolean;
 };
 
 const FlavorizationStepper = (props: FlavorizationStepperProps) => {
@@ -37,30 +38,32 @@ const FlavorizationStepper = (props: FlavorizationStepperProps) => {
     step: FlavorizationIntermediate,
     stepIndex: number
   ) {
-    const alternatives = step.via.owner
-      .apply(step.parent)
-      .filter(i => !i.equals(step));
+    const alternatives = step.via
+      ? step.via.owner.apply(step.parent).filter(i => !i.equals(step))
+      : [];
+
+    const ruleName = step.via ? `${step.via.owner.comment}` : '';
 
     return (
       <Step
         key={stepIndex}
         active={index === stepIndex}
-        onClick={() => setIndex(index)}
+        onClick={() => setIndex(stepIndex)}
       >
         <StepButton sx={{ textAlign: 'left' }}>
           <Typography variant="body2">{step.value}</Typography>
         </StepButton>
         <StepContent>
-          <Typography variant="subtitle2">
-            <Typography>
-              {step.via.owner.comment} (#${step.via.index})
+          {ruleName && (
+            <Typography key="ruleName" variant="subtitle2">
+              {ruleName}
             </Typography>
-            {alternatives.map((a, i) => (
-              <Typography key={`alternative_${i}`} variant="body2">
-                {a.value}
-              </Typography>
-            ))}
-          </Typography>
+          )}
+          {alternatives.map((a, i) => (
+            <Typography key={`alternative_${i}`} variant="body2">
+              {a.value}
+            </Typography>
+          ))}
         </StepContent>
       </Step>
     );
@@ -71,6 +74,10 @@ const FlavorizationStepper = (props: FlavorizationStepperProps) => {
   }
 
   const steps = [...props.last.chain()];
+  if (props.reverse) {
+    steps.reverse();
+  }
+
   return (
     <Stepper nonLinear orientation="vertical">
       {steps.map(FlavorizationStep)}
@@ -94,9 +101,16 @@ const LanguagePicker = (props: LanguagePickerProps) => {
         labelId="select-language"
       >
         <MenuItem value="ru">Russian</MenuItem>
+        <MenuItem value="be">Belarusian</MenuItem>
         <MenuItem value="uk">Ukrainian</MenuItem>
         <MenuItem value="pl">Polish</MenuItem>
         <MenuItem value="cs">Czech</MenuItem>
+        <MenuItem value="sk">Slovak</MenuItem>
+        <MenuItem value="bg">Bulgarian</MenuItem>
+        <MenuItem value="mk">Macedonian</MenuItem>
+        <MenuItem value="sr">Serbian</MenuItem>
+        <MenuItem value="hr">Croatian</MenuItem>
+        <MenuItem value="sl">Slovenian</MenuItem>
       </Select>
     </FormControl>
   );
@@ -128,16 +142,49 @@ const FlavorizationPicker = (props: FlavorizationPickerProps) => {
   );
 };
 
+const getLanguageByColumn = (a1Notation: string): LanguageKey => {
+  switch (a1Notation[0]) {
+    case 'I':
+      return 'ru';
+    case 'J':
+      return 'be';
+    case 'K':
+      return 'uk';
+    case 'L':
+      return 'pl';
+    case 'M':
+      return 'cs';
+    case 'N':
+      return 'sk';
+    case 'O':
+      return 'bg';
+    case 'P':
+      return 'mk';
+    case 'Q':
+      return 'sr';
+    case 'R':
+      return 'hr';
+    case 'S':
+      return 'sl';
+    default:
+      return undefined;
+  }
+};
+
 const DictionarySidebar = () => {
   const sheetsContext = useContext(SheetsPositionContext);
   const [error, setError] = React.useState(null);
-  const [flavorizationTable, setFlavorizationTable] = React.useState<
-    FlavorizationTable
-  >();
-  const [targetLanguage, setTargetLanguage] = React.useState<LanguageKey>();
+  const [flavorizationTables, setFlavorizationTables] = React.useState<
+    Record<string, FlavorizationTable>
+  >({});
+  const columnLanguage = getLanguageByColumn(
+    sheetsContext.position.range.a1Notation
+  );
+  const [targetLanguage, setTargetLanguage] = React.useState<LanguageKey>(columnLanguage || 'ru');
+
   const [flavorizationLevel, setFlavorizationLevel] = React.useState<
     AllowedFlavorizationLevel
-  >();
+  >('Etymological');
 
   React.useEffect(() => {
     if (targetLanguage) {
@@ -147,10 +194,13 @@ const DictionarySidebar = () => {
         .then(rawRecords => {
           const rules = rawRecords
             .map(raw => new razumlivost.FlavorizationRuleDTO(raw))
-            .filter(r => !r.disabled)
+            .filter(r => !r.disabled && r.name)
             .map(dto => new razumlivost.FlavorizationRule(dto));
 
-          setFlavorizationTable(new razumlivost.FlavorizationTable(rules));
+          setFlavorizationTables({
+            ...flavorizationTables,
+            [columnLanguage]: new razumlivost.FlavorizationTable(rules),
+          });
         })
         .catch(e => setError(e));
     }
@@ -158,14 +208,18 @@ const DictionarySidebar = () => {
 
   let analysis: TranslationAnalysis;
 
-  if (flavorizationTable && flavorizationLevel && targetLanguage) {
+  if (
+    flavorizationTables[targetLanguage] &&
+    flavorizationLevel &&
+    targetLanguage
+  ) {
     const dto = new razumlivost.WordsDTO(sheetsContext.position.record);
     const translationContext = new razumlivost.TranslationContext(
       dto,
       targetLanguage
     );
 
-    analysis = flavorizationTable.analyzeTranslations(
+    analysis = flavorizationTables[targetLanguage].analyzeTranslations(
       translationContext,
       flavorizationLevel as any
     );
@@ -213,6 +267,7 @@ const DictionarySidebar = () => {
       <FlavorizationStepper
         last={analysis?.matches[0]?.interslavic}
         level={flavorizationLevel}
+        reverse
       />
       <Typography py={2} variant="subtitle1">
         National transformation
