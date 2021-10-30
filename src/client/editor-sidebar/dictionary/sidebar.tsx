@@ -71,7 +71,7 @@ const DictionarySidebar = () => {
     [setFlavorizationLevel]
   );
 
-  const [flavorizator, setFlavorizator] = React.useState(null);
+  const [flavorizationTable, setFlavorizationTable] = React.useState(null);
   const [activeStepISV, setActiveStepISV] = React.useState();
   // const [activeStepNational, setActiveStepNational] = React.useState(NaN);
 
@@ -82,10 +82,11 @@ const DictionarySidebar = () => {
         .getSheetRecords(sheetName, {})
         .then(rawRecords => {
           const rules = rawRecords
-            .filter(r => r.match && r.name)
-            .map(razumlivost.mapFlavorizationRule);
+            .map(raw => new razumlivost.FlavorizationRuleDTO(raw))
+            .filter(r => !r.disabled)
+            .map(dto => new razumlivost.FlavorizationRule(dto));
 
-          setFlavorizator({ rules });
+          setFlavorizationTable(new razumlivost.FlavorizationTable(rules));
         })
         .catch(e => setError(e));
     }
@@ -148,9 +149,9 @@ const DictionarySidebar = () => {
             onChange={onFlavorizationLevelChange}
             labelId="select-language"
           >
-            <MenuItem value="E">Etymological</MenuItem>
-            <MenuItem value="S">Standard</MenuItem>
-            <MenuItem value="M">Mistaken</MenuItem>
+            <MenuItem value="Etymological">Etymological</MenuItem>
+            <MenuItem value="Standard">Standard</MenuItem>
+            <MenuItem value="Mistaken">Mistaken</MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -169,7 +170,13 @@ const DictionarySidebar = () => {
         Interslavic transformation
       </Typography>
       <Stepper nonLinear activeStep={activeStepISV} orientation="vertical">
-        {flavorizator && flavorizator.rules.map(renderStep(setActiveStepISV))}
+        {flavorizationTable &&
+        flavorizationLevel &&
+        lang &&
+        flavorizationTable.analyzeTranslations(new razumlivost.TranslationContext(
+          new razumlivost.WordsDTO(sheetsContext.position.record, lang),
+          flavorizationLevel
+        )}
       </Stepper>
       <Typography py={2} variant="subtitle1">
         National transformation
