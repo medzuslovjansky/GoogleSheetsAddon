@@ -20,10 +20,12 @@ import {
   Stepper,
   Typography,
 } from '@mui/material';
+import { BackpackOutlined } from '@mui/icons-material';
 import RecordNavigation from '../common/components/RecordNavigation';
 import SheetsPositionContext from '../common/contexts/SheetsPositionContext';
 import buildSheetName from '../../../common/buildSheetName';
 import server from '../../utils/server';
+import CircularProgressBox from '../common/components/CircularProgressBox';
 
 type FlavorizationStepperProps = {
   last: FlavorizationIntermediate;
@@ -42,7 +44,7 @@ const FlavorizationStepper = (props: FlavorizationStepperProps) => {
       ? step.via.owner.apply(step.parent).filter(i => !i.equals(step))
       : [];
 
-    const ruleName = step.via ? `${step.via.owner.comment}` : '';
+    const ruleName = step.via ? `${step.via.owner.name}` : '';
 
     return (
       <Step
@@ -171,6 +173,45 @@ const getLanguageByColumn = (a1Notation: string): LanguageKey => {
   }
 };
 
+type AnalysisSectionProps = {
+  matches: any[];
+  flavorizationLevel: any;
+};
+
+const AnalysisSection = (props: AnalysisSectionProps) => {
+  return (
+    <Box>
+      <Paper variant="outlined">
+        <Box p={2}>
+          <Typography variant="body1">Distance:</Typography>
+          <Typography
+            variant="body1"
+            sx={{ color: theme => theme.palette.primary.main }}
+          >
+            {props.matches[0]?.distance.absolute} chars (
+            {props.matches[0]?.distance.percent}%)
+          </Typography>
+        </Box>
+      </Paper>
+      <Typography py={2} variant="subtitle1">
+        Interslavic transformation
+      </Typography>
+      <FlavorizationStepper
+        last={props.matches[0]?.interslavic}
+        level={props.flavorizationLevel}
+        reverse
+      />
+      <Typography py={2} variant="subtitle1">
+        National transformation
+      </Typography>
+      <FlavorizationStepper
+        last={props.matches[0]?.national}
+        level={props.flavorizationLevel}
+      />
+    </Box>
+  );
+};
+
 const DictionarySidebar = () => {
   const sheetsContext = useContext(SheetsPositionContext);
   const [error, setError] = React.useState(null);
@@ -180,14 +221,16 @@ const DictionarySidebar = () => {
   const columnLanguage = getLanguageByColumn(
     sheetsContext.position.range.a1Notation
   );
-  const [targetLanguage, setTargetLanguage] = React.useState<LanguageKey>(columnLanguage || 'ru');
+  const [targetLanguage, setTargetLanguage] = React.useState<LanguageKey>(
+    columnLanguage || 'ru'
+  );
 
   const [flavorizationLevel, setFlavorizationLevel] = React.useState<
     AllowedFlavorizationLevel
   >('Etymological');
 
   React.useEffect(() => {
-    if (targetLanguage) {
+    if (targetLanguage && !flavorizationTables[targetLanguage]) {
       const sheetName = buildSheetName('flavorization', targetLanguage);
       server.serverFunctions
         .getSheetRecords(sheetName, {})
@@ -199,12 +242,12 @@ const DictionarySidebar = () => {
 
           setFlavorizationTables({
             ...flavorizationTables,
-            [columnLanguage]: new razumlivost.FlavorizationTable(rules),
+            [targetLanguage]: new razumlivost.FlavorizationTable(rules),
           });
         })
         .catch(e => setError(e));
     }
-  }, [targetLanguage]);
+  }, [targetLanguage, flavorizationTables]);
 
   let analysis: TranslationAnalysis;
 
@@ -249,33 +292,17 @@ const DictionarySidebar = () => {
           label={'Flavorization Level:'}
         />
       </Box>
-      <Paper variant="outlined">
-        <Box p={2}>
-          <Typography variant="body1">Distance:</Typography>
-          <Typography
-            variant="body1"
-            sx={{ color: theme => theme.palette.primary.main }}
-          >
-            {analysis?.matches[0]?.distance.absolute} chars (
-            {analysis?.matches[0]?.distance.percent}%)
-          </Typography>
+      {analysis ? (
+        <AnalysisSection
+          key="analysis"
+          matches={analysis.matches}
+          flavorizationLevel={flavorizationLevel}
+        />
+      ) : (
+        <Box my={2} key="loaderBox">
+          <CircularProgressBox />
         </Box>
-      </Paper>
-      <Typography py={2} variant="subtitle1">
-        Interslavic transformation
-      </Typography>
-      <FlavorizationStepper
-        last={analysis?.matches[0]?.interslavic}
-        level={flavorizationLevel}
-        reverse
-      />
-      <Typography py={2} variant="subtitle1">
-        National transformation
-      </Typography>
-      <FlavorizationStepper
-        last={analysis?.matches[0]?.national}
-        level={flavorizationLevel}
-      />
+      )}
     </Box>
   );
 

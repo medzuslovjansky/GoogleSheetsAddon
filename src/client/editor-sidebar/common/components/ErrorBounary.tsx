@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card } from '@mui/material';
+import { Button, Card } from "@mui/material";
 import Pre from './Pre';
 
 type ErrorBoundaryState = {
@@ -32,10 +32,15 @@ export default class ErrorBoundary extends Component<any, ErrorBoundaryState> {
     this.logger.error(error, errorInfo);
   }
 
+  reset = () => {
+    this.setState({ hasError: false, errorDetails: '' });
+  };
+
   render() {
     if (this.state.hasError) {
       return (
         <Card key="errorCard" variant="outlined" color="error">
+          <Button onClick={this.reset}>Refresh</Button>
           <Pre>{this.state.errorDetails}</Pre>
         </Card>
       );
